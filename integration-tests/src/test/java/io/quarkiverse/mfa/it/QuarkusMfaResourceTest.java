@@ -19,7 +19,7 @@ import io.restassured.filter.cookie.CookieFilter;
 import io.vertx.core.json.JsonObject;
 
 @QuarkusTest
-public class QuarkusFormMfaResourceTest {
+public class QuarkusMfaResourceTest {
 
     @Test
     public void testPublicAccess() {
