@@ -1,0 +1,155 @@
+
+:summaryTableId: quarkus-mfa
+[.configuration-legend]
+icon:lock[title=Fixed at build time] Configuration property fixed at build time - All other configuration properties are overridable at runtime
+[.configuration-reference.searchable, cols="80,.^10,.^10"]
+|===
+
+h|[[quarkus-mfa_configuration]]link:#quarkus-mfa_configuration[Configuration property]
+
+h|Type
+h|Default
+
+a|icon:lock[title=Fixed at build time] [[quarkus-mfa_quarkus.mfa.enabled]]`link:#quarkus-mfa_quarkus.mfa.enabled[quarkus.mfa.enabled]`
+
+[.description]
+--
+If the MFA extension is enabled.
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_MFA_ENABLED+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_MFA_ENABLED+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`true`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-mfa_quarkus.mfa.login-view]]`link:#quarkus-mfa_quarkus.mfa.login-view[quarkus.mfa.login-view]`
+
+[.description]
+--
+The login view handler
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_MFA_LOGIN_VIEW+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_MFA_LOGIN_VIEW+++`
+endif::add-copy-button-to-env-var[]
+--|string 
+|`/mfa_login`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-mfa_quarkus.mfa.logout-view]]`link:#quarkus-mfa_quarkus.mfa.logout-view[quarkus.mfa.logout-view]`
+
+[.description]
+--
+The logout view handler
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_MFA_LOGOUT_VIEW+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_MFA_LOGOUT_VIEW+++`
+endif::add-copy-button-to-env-var[]
+--|string 
+|`/mfa_logout`
+
+
+a|icon:lock[title=Fixed at build time] [[quarkus-mfa_quarkus.mfa.login-action]]`link:#quarkus-mfa_quarkus.mfa.login-action[quarkus.mfa.login-action]`
+
+[.description]
+--
+The login action handler
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_MFA_LOGIN_ACTION+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_MFA_LOGIN_ACTION+++`
+endif::add-copy-button-to-env-var[]
+--|string 
+|`/mfa_action`
+
+
+a| [[quarkus-mfa_quarkus.mfa.encryption-key]]`link:#quarkus-mfa_quarkus.mfa.encryption-key[quarkus.mfa.encryption-key]`
+
+[.description]
+--
+The encrpytion key used to encrypte JWEs
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_MFA_ENCRYPTION_KEY+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_MFA_ENCRYPTION_KEY+++`
+endif::add-copy-button-to-env-var[]
+--|string 
+|
+
+
+a| [[quarkus-mfa_quarkus.mfa.session-timeout]]`link:#quarkus-mfa_quarkus.mfa.session-timeout[quarkus.mfa.session-timeout]`
+
+[.description]
+--
+The inactivity (idle) timeout When inactivity timeout is reached, cookie is not renewed and a new login is enforced.
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_MFA_SESSION_TIMEOUT+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_MFA_SESSION_TIMEOUT+++`
+endif::add-copy-button-to-env-var[]
+--|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
+  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
+|`PT30M`
+
+
+a| [[quarkus-mfa_quarkus.mfa.new-cookie-interval]]`link:#quarkus-mfa_quarkus.mfa.new-cookie-interval[quarkus.mfa.new-cookie-interval]`
+
+[.description]
+--
+How old a cookie can get before it will be replaced with a new cookie with an updated timeout, also referred to as "renewal-timeout". Note that smaller values will result in slightly more server load (as new encrypted cookies will be generated more often), however larger values affect the inactivity timeout as the timeout is set when a cookie is generated. For example if this is set to 10 minutes, and the inactivity timeout is 30m, if a users last request is when the cookie is 9m old then the actual timeout will happen 21m after the last request, as the timeout is only refreshed when a new cookie is generated. In other words, no timeout is tracked on the server side; the timestamp is encoded and encrypted in the cookie itself, and it is decrypted and parsed with each request.
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_MFA_NEW_COOKIE_INTERVAL+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_MFA_NEW_COOKIE_INTERVAL+++`
+endif::add-copy-button-to-env-var[]
+--|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
+  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
+|`PT1M`
+
+
+a| [[quarkus-mfa_quarkus.mfa.cookie-name]]`link:#quarkus-mfa_quarkus.mfa.cookie-name[quarkus.mfa.cookie-name]`
+
+[.description]
+--
+The cookie that is used to store the persistent session
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_MFA_COOKIE_NAME+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_MFA_COOKIE_NAME+++`
+endif::add-copy-button-to-env-var[]
+--|string 
+|`quarkus-mfa-credential`
+
+|===
+ifndef::no-duration-note[]
+[NOTE]
+[id='duration-note-anchor-{summaryTableId}']
+.About the Duration format
+====
+The format for durations uses the standard `java.time.Duration` format.
+You can learn more about it in the link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html#parse-java.lang.CharSequence-[Duration#parse() javadoc].
+
+You can also provide duration values starting with a number.
+In this case, if the value consists only of a number, the converter treats the value as seconds.
+Otherwise, `PT` is implicitly prepended to the value to obtain a standard `java.time.Duration` format.
+====
+endif::no-duration-note[]

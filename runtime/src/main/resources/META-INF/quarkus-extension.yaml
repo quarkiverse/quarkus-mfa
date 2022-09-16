@@ -1,0 +1,14 @@
+artifact: ${project.groupId}:${project.artifactId}:${project.version}
+name: "Quarkus Multi-Factored Authentication (MFA) Extension"
+description: Enhanced forms based authentication with TOTP along with account lockout, password reset, and authenticator setup.
+metadata:
+  keywords:
+  - "quarkus-mfa"
+  - "mfa"
+  categories:
+  - "miscellaneous"
+  guide: https://quarkiverse.github.io/quarkiverse-docs/quarkus-mfa/dev/index.html
+  status: "stable"
+  config:
+  - "quarkus.mfa."
+  

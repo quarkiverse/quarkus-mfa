@@ -1,0 +1,19 @@
+= Quarkus MFA
+
+include::./includes/attributes.adoc[]
+
+This Quarkus provides Multi-Factored Authentication (MFA).
+
+== Installation
+
+If you want to use this extension, you need to add the `io.quarkiverse.mfa:quarkus-mfa` extension first.
+In your `pom.xml` file, add:
+
+[source,xml,subs=attributes+]
+----
+<dependency>
+    <groupId>io.quarkiverse.mfa</groupId>
+    <artifactId>quarkus-mfa</artifactId>
+    <version>{quarkus-mfa-version}</version>
+</dependency>
+----
