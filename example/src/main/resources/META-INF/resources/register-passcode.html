@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+</head>
+<body>
+
+	<div class="flex items-center justify-center h-screen flex-col">
+		<div class="p-6 md:flex md:items-center md:justify-between">
+			<div class="min-w-0 flex-1">
+				<h2
+					class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">Register Passcode</h2>
+			</div>
+		</div>
+
+
+		<form class="p-6 space-y-8 divide-y divide-gray-200 w-[35vw]" action="mfa_action" method="POST" >
+			<div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+				<div class="space-y-6 sm:space-y-5">
+					<div>
+						<h3 class="text-lg font-medium leading-6 text-gray-900">Register TOTP Secret</h3>
+						<p class="mt-1 max-w-2xl text-sm text-gray-500">Scan the QR code with your authenticator application.</p>
+					</div>
+					<div class="space-y-6 pt-8 sm:space-y-5 sm:pt-10">
+						<div class="space-y-6 sm:space-y-5">
+							<div
+								class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+								<label for="first-name"
+									class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">QR Code</label>
+								<div class="mt-1 sm:col-span-2 sm:mt-0">
+									<img src="@@QR_CODE_IMAGE@@"></img>
+								</div>
+							</div>							
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="pt-5">
+				<div class="flex justify-center">
+					<button type="submit"
+						class="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Next</button>
+				</div>
+			</div>
+		</form>
+
+	</div>
+
+
+</body>
+</html>

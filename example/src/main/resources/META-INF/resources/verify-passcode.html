@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+</head>
+<body>
+
+	<div class="flex items-center justify-center h-screen flex-col">
+		<div class="p-6 md:flex md:items-center md:justify-between">
+			<div class="min-w-0 flex-1">
+				<h2
+					class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">Verify Passcode</h2>
+			</div>
+		</div>
+
+		<div class="rounded-md bg-red-50 p-4 @@HIDE@@">
+		  <div class="flex">
+		    <div class="flex-shrink-0">
+		      <!-- Heroicon name: mini/x-circle -->
+		      <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+		        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+		      </svg>
+		    </div>
+		    <div class="ml-3">
+		      <h3 class="text-sm font-medium text-red-800">Login Error</h3>
+		      <div class="mt-2 text-sm text-red-700">
+		      		<div>@@ERROR_MSG@@</div>		        
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<form class="p-6 space-y-8 divide-y divide-gray-200 w-[35vw]" action="mfa_action" method="POST" >
+			<div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+				<div class="space-y-6 sm:space-y-5">
+					<div class="space-y-6 pt-8 sm:space-y-5 sm:pt-10">
+						<div class="space-y-6 sm:space-y-5">
+							<div
+								class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+								<label for="first-name"
+									class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Passcode</label>
+								<div class="mt-1 sm:col-span-2 sm:mt-0">
+									<input type="text" name="passcode" id="passcode" 
+										autocomplete="given-name"
+										class="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="pt-5">
+				<div class="flex justify-center">
+					<button type="submit"
+						class="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Verify</button>
+				</div>
+			</div>
+		</form>
+
+	</div>
+
+
+</body>
+</html>
