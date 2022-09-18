@@ -25,9 +25,9 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.impl.BlockingHandlerDecorator;
 
 @ApplicationScoped
-public class SPARouter {
+public class MFARouter {
 
-	private static final Logger log = Logger.getLogger(SPARouter.class);
+	private static final Logger log = Logger.getLogger(MFARouter.class);
 
 	public void setupRouter(@Observes @Priority(value = 1) Router router) {
 		log.infof("Setting up routes\n");
