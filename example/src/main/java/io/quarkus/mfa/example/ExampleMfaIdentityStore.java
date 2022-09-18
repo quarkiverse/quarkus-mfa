@@ -123,7 +123,7 @@ public class ExampleMfaIdentityStore implements MfaIdentityStore {
             Argon2 argon2 = Argon2Factory.create(Argon2Types.ARGON2id);
             if (argon2.verify(user.passwordHash, currentPassword.getPassword())) {
                 user.authFailedAttempts = 0;
-                if (newPassword.getPassword().length > 3) {
+                if (newPassword.getPassword().length < 3) {
                     return PasswordResetResult.FAILED_POLICY;
                 }
                 user.passwordHash = argon2.hash(4, 1024 * 1024, 8, newPassword.getPassword());

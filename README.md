@@ -43,4 +43,4 @@ The Quarkus MFA extension is similar to the built-in [form based authentication 
 
 1. Create an [MFA Identity Store](runtime/src/main/java/io/quarkus/mfa/runtime/MfaIdentityStore.java) implementation. This [TestMfaIdentityStore.java](integration-tests/src/main/java/io/quarkus/mfa/it/TestMfaIdentityStore.java) example can be used as a reference.
 
-1. Create login views or use SPA javascript to perform authentication actions like the ones performed in the [integration tests](integration-tests/src/test/java/io/quarkiverse/mfa/it/QuarkusMfaResourceTest.java)
+1. Create login views or use SPA javascript to perform authentication actions. Please examine the HTML Forms and SPA examples in the [example project](example)

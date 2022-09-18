@@ -5,42 +5,420 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<title>Quarkus MFA SPA Example</title>
 </head>
 <body>
+    <spa-app></spa-app>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    
+<script type="module">
+import {LitElement, html, classMap, ifDefined} from 'https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js';
 
-	<div class="flex items-center justify-center h-screen flex-col">
-		<div class="p-6 md:flex md:items-center md:justify-between">
-			<div class="min-w-0 flex-1">
-				<h2
-					class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">Single Page Application</h2>
-			</div>
-		</div>
 
-		<div class="overflow-hidden bg-white shadow sm:rounded-lg w-[35vw]">
-			<div class="px-4 py-5 sm:px-6">
-				<h3 class="text-lg font-medium leading-6 text-gray-900">Authentication Information</h3>
-				<p class="mt-1 max-w-2xl text-sm text-gray-500">Logged in User details.</p>
-			</div>
-			<div class="border-t border-gray-200 px-4 py-5 sm:p-0">
-				<dl class="sm:divide-y sm:divide-gray-200">
-					<div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-						<dt class="text-sm font-medium text-gray-500">Username</dt>
-						<dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">@@USER@@</dd>
-					</div>
-				</dl>
-			</div>
-		</div>
+export class SPAElement extends LitElement {
+	
+	
+	static properties = {
+		principal: {state:true, type:String},
+		action: {state:true, type:String},
+		status: {state:true, type:String},
+		totpUrl: {state:true, type:String}, 
+		statusJSON: {state:true, type:Object},
+		accessJSON: {state:true, type:Object},
+	};
+
+	constructor() {
+		super();
+		this.statusJSON = {};
+	}
+
+	//don't use shadowDOM so lightDOM styles are applied
+	createRenderRoot() { return this;}
+
+	firstUpdated(){
+		this.statusUpdate();
+		this.accessSecure();
+	}
+
+	render() {
+		if (this.action=='login'){			
+			return this.loginTemplate;
+		}
+		if (this.action=='verify-totp'){
+			return this.verifyTotpTemplate;
+		}
+		if (this.action=='password-reset'){
+			return this.passwordResetTemplate;
+		}
+		if (this.action=='register-totp'){
+			return this.registerTotpTemplate;
+		}
+		return this.mainTemplate;
+	}
+
+	async statusUpdate(){
+		try{
+			const response = await fetch('/mfa_action', {method: 'GET', headers: {'Accept': 'application/json'}});
+			if (!response.ok) {
+				throw new Error('Reponse status ' + response.status);
+			};
 		
-		<div class="pt-5">
-				<div class="flex justify-end">
-					<button type="submit" onclick="location.href='logout';"
-						class="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Logout</button>
-					<button type="submit" onclick="location.href='/';"
-						class="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Main</button>
+			const data = await response.json();
+            this.statusJSON = data;
+			this.principal = this.statusJSON.sub;
+		} catch (error) {
+			console.error('Error:', error);
+			this.statusJSON = {};
+		}	
+	}
+
+	async accessSecure(){
+		try{
+			const response = await fetch('/spa-secure', {method: 'GET', headers: {'Accept': 'application/json'}});
+			if (!response.ok) {
+				throw new Error("Status Code " + response.status);
+			};
+		
+			const data = await response.json();
+			this.accessJSON = data;
+		} catch (error) {
+			this.accessJSON = {error: error.message};
+		}	
+	}
+	
+	checkStatus(data){
+ 		this.action = data.action;
+		this.status = data.status;
+		if (this.action=='login' && this.status=='success'){
+			this.action= undefined;
+			this.status = undefined;
+			this.principal = data.sub;
+		} else if (this.action=='register-totp'){
+			this.totpUrl = data["totp-url"];
+		}else if (this.action=='logout' && this.status=='success'){
+			this.action= undefined;
+			this.status = undefined;
+			this.totpUrl = undefined;
+		}
+		this.statusUpdate();
+		this.accessSecure();
+	}
+
+	async logout(){
+		try{
+			const response = await fetch('/mfa_action?logout=true', {method: 'GET', headers: {'Accept': 'application/json'}});
+			if (!response.ok) {
+				throw new Error("Status Code " + response.status);
+			};
+			const data = await response.json();
+			this.checkStatus(data);
+		} catch (error) {
+			this.accessJSON = {error: error.message};
+		}	
+	}
+
+	get mainTemplate(){
+		const accounts = [{name:"jdoe1", value: "Successful Login"},{name:"jdoe2", value: "MFA Exempt"},{name:"jdoe3", value: "Account Locked"},{name:"jdoe4", value: "Password Reset"},{name:"jdoe5", value: "TOTP Registration"},];
+		const secureContent =this.accessJSON?.error? html `<div class="text-red-600">${this.accessJSON.error}</div>`: html `<code class="whitespace-pre-line text-green-600">${JSON.stringify(this.accessJSON, null, '\t')}</code>`;
+		return html `
+		<div class="flex items-center justify-center h-screen flex-col">
+			<div class="p-6 md:flex md:items-center md:justify-between">
+				<div class="min-w-0 flex-1">
+					<h2
+						class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">Quarkus MFA SPA Example</h2>
+				</div>
+			</div>		
+
+			${this.sectionTemplate('Authentication Information', 'Logged in User details.', [{name: 'Username', value: this.principal}])}
+			
+			${this.sectionTemplate('Authentication Status', 'Current Authentication Status JSON.', [{name: 'JSON', value: html `<code class="whitespace-pre-line">${JSON.stringify(this.statusJSON, null, '\t')}</code>`}, {name: 'Secure Content', value: secureContent}])}
+
+			<div class="pt-5">
+					<div class="flex justify-center">
+						${this.buttonTemplate('Refresh Status',(e)=> this.statusUpdate() )}
+						${this.buttonTemplate('Access Secure',(e)=> this.accessSecure() )}
+					</div>
+			</div>
+			
+			
+			${this.sectionTemplate('Test Accounts', 'Test login accounts for various scenarios. All passwords are mfa. The TOTP passcode value will be displayed in the console for 30 seconds.', accounts)}
+
+			<div class="pt-5">
+				<div class="flex justify-center">
+					${!this.principal? this.buttonTemplate('Login',(e)=> {this.action='login';}): undefined}
+					${this.principal?  this.buttonTemplate('Logout',(e)=> this.logout()): undefined}
+				</div>
+			</div>		
+
+		</div>	
+		
+		`;
+	}
+
+	async handleLogin(e){
+		e.preventDefault();
+		const request={
+			username: this.querySelector("#username").value,
+			password: this.querySelector("#password").value
+		}
+		 try{
+		 	const response = await fetch('mfa_action', {method: 'POST', headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}, body: JSON.stringify(request)});
+		 	if (!response.ok) {
+				throw new Error('Reponse status ' + response.status);
+		 	};		
+		 	const data = await response.json();
+			this.checkStatus(data);
+		 } catch (error) {
+		 	console.error('Error:', error);
+			 this.status = 'failed';
+		 }	
+	}
+
+	get loginTemplate(){
+		const content = html `
+		${this.headingTemplate('Login Information', 'Enter your Credentials.')}
+
+		<div class="space-y-6 sm:space-y-5">
+			${this.inputTemplate('Username','username', 'text', 'jdoe1')}
+			${this.inputTemplate('Password','password', 'password', 'mfa')}			
+		</div>
+		`
+		let errorTemplate = this.status=='failed'?this.errorTemplate('Login Error','Authentication Failed'): undefined;
+		errorTemplate = this.status=='account-locked'?this.errorTemplate('Login Error','Account Locked'): errorTemplate;
+
+		return this.authTemplate('Login', content, this.buttonTemplate('Login', this.handleLogin), errorTemplate);
+	}
+
+
+	async handleVerify(e){
+		e.preventDefault();
+		const request={
+			passcode: this.querySelector("#passcode").value,
+		}
+		 try{
+		 	const response = await fetch('mfa_action', {method: 'POST', headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}, body: JSON.stringify(request)});
+		 	if (!response.ok) {
+				throw new Error('Reponse status ' + response.status);
+		 	};		
+		 	const data = await response.json();
+			this.checkStatus(data.sub);
+		 } catch (error) {
+		 	console.error('Error:', error);
+			 this.status = 'failed';
+		 }	
+	}
+
+
+	get verifyTotpTemplate(){
+		const content = html `
+		${this.headingTemplate('Verify Passcode')}
+
+		<div class="space-y-6 sm:space-y-5">
+			${this.inputTemplate('Passcode','passcode', 'text')}
+		</div>
+		`
+		let errorTemplate = this.status=='failed'?this.errorTemplate('Verification Error','Passcode Authentication Failed'): undefined;
+		return this.authTemplate('Verify', content, this.buttonTemplate('Verify', this.handleVerify), errorTemplate);
+	}
+
+
+	async handlePasswordReset(e){
+		e.preventDefault();
+		const newPwd = this.querySelector("#new-password").value;
+		const confirmPwd = this.querySelector("#confirm-password").value;
+		if (newPwd && newPwd != confirmPwd){
+			this.status = "failed-mismatch";
+			return;
+		}
+		const request={
+			password: this.querySelector("#password").value,
+			"new-password": confirmPwd,
+		}
+		 try{
+		 	const response = await fetch('mfa_action', {method: 'POST', headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}, body: JSON.stringify(request)});
+		 	if (!response.ok) {
+				throw new Error('Reponse status ' + response.status);
+		 	};		
+		 	const data = await response.json();
+			this.checkStatus(data);
+		 } catch (error) {
+		 	console.error('Error:', error);
+			 this.status = 'failed';
+		 }	
+	}
+
+	get passwordResetTemplate(){
+		const content = html `
+		${this.headingTemplate('Password Reset', 'Please update your password.')}
+
+		<div class="space-y-6 sm:space-y-5">
+			${this.inputTemplate('Current Password','password', 'password', 'mfa')}
+			${this.inputTemplate('New Password','new-password', 'password', 'mfa2')}			
+			${this.inputTemplate('Confirm Password','confirm-password', 'password', 'mfa2')}			
+		</div>
+		`
+		let errorTemplate = this.status=='failed-current'?this.errorTemplate('Password Reset Error','Current Password Failed Authentication'): undefined;
+		errorTemplate = this.status=='failed-policy'?this.errorTemplate('Password Reset Error','Password Policy Violation'): errorTemplate;
+		errorTemplate = this.status=='failed-mismatch'?this.errorTemplate('Password Reset Error','Passwords do not match'): errorTemplate;
+
+		return this.authTemplate('Password Reset', content, this.buttonTemplate('Password Reset', this.handlePasswordReset), errorTemplate);
+	}
+
+
+	async handleRegister(e){
+		e.preventDefault();
+		const request={}
+		 try{
+		 	const response = await fetch('mfa_action', {method: 'POST', headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}, body: JSON.stringify(request)});
+		 	if (!response.ok) {
+				throw new Error('Reponse status ' + response.status);
+		 	};		
+		 	const data = await response.json();
+			this.checkStatus(data);
+		 } catch (error) {
+		 	console.error('Error:', error);
+			 this.status = 'failed';
+		 }	
+	}
+
+
+	get registerTotpTemplate(){
+		const content = html `
+		${this.headingTemplate('Register TOTP Secret', 'Scan the QR code with your authenticator application.')}
+
+		<div class="space-y-6 sm:space-y-5">
+			<div
+				class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+				<label for="qr-code"
+					class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">QR Code</label>
+				<div class="mt-1 sm:col-span-2 sm:mt-0">
+					<img src="${this.totpUrl}"></img>
+				</div>
+			</div>				
+		</div>
+		`
+		return this.authTemplate('Register Passcode', content, this.buttonTemplate('Next', this.handleRegister));
+	}
+
+	headingTemplate(name, desc){
+		return html `<div>
+			<h3 class="text-lg font-medium leading-6 text-gray-900">${name}</h3>
+			<p class="mt-1 max-w-2xl text-sm text-gray-500">${desc}</p>
+		</div>`
+	}
+
+	inputTemplate(name, label, type, value){
+		return html `
+		<div
+				class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+				<label for="${label}"
+					class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">${name}</label>
+				<div class="mt-1 sm:col-span-2 sm:mt-0">
+					<input type="${type}" name="${label}" id="${label}" value="${ifDefined(value)}"
+						autocomplete="${label}"
+						class="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm">
+				</div>
+			</div>
+		`;
+	}
+
+	sectionTemplate(name, desc, entries){
+
+		return html `
+			<div class="mt-6 overflow-hidden bg-white shadow sm:rounded-lg w-[35vw]">
+				<div class="px-4 py-5 sm:px-6">
+					<h3 class="text-lg font-medium leading-6 text-gray-900">${name}</h3>
+					<p class="mt-1 max-w-2xl text-sm text-gray-500">${desc}</p>
+				</div>
+				${entries.map(e=>html `
+					<div class="border-t border-gray-200 px-4 py-5 sm:p-0">
+					<dl class="sm:divide-y sm:divide-gray-200">
+						<div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+							<dt class="text-sm font-medium text-gray-500">${e.name}</dt>
+							<dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">${e.value}</dd>
+						</div>
+					</dl>
+				</div>	
+					`)}	
+				
+			</div>
+		`
+	}
+
+	authTemplate(title, content, buttonContent, errorContent){
+		return html`
+		<div class="flex items-center justify-center h-screen flex-col">
+			
+			${this.titleTemplate(title)}
+			
+			${errorContent}
+
+			<form class="p-6 space-y-8 divide-y divide-gray-200 w-[35vw]" >
+				<div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+					<div class="space-y-6 sm:space-y-5">
+
+
+						<div class="space-y-6 pt-8 sm:space-y-5 sm:pt-10">
+							${content}	
+						</div>
+					</div>
+				</div>
+				<div class="pt-5">
+					<div class="flex justify-center">	
+						${buttonContent}
+					</div>		
+				</div>	
+			</form>
+
+	</div>
+
+		`;	
+	}
+
+	titleTemplate(title){
+		return html `
+		<div class="p-6 md:flex md:items-center md:justify-between">
+				<div class="min-w-0 flex-1">
+					<h2
+						class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">${title}</h2>
 				</div>
 		</div>
-		
-				
-	</div>
-</body>
+		`
+	}
+
+	errorTemplate(type, message){
+			return html `
+			<div class="rounded-md bg-red-50 p-4">
+			<div class="flex">
+				<div class="flex-shrink-0">
+				<!-- Heroicon name: mini/x-circle -->
+				<svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+					<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+				</svg>
+				</div>
+				<div class="ml-3">
+				<h3 class="text-sm font-medium text-red-800">${type}</h3>
+				<div class="mt-2 text-sm text-red-700">
+						<div>${message}</div>		        
+				</div>
+				</div>
+			</div>
+			</div>
+			`;
+	}
+
+	buttonTemplate(name, action){
+		return html `
+	
+			<button type="submit" @click=${action}
+				class="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">${name}</button>
+`
+	}
+
+}
+
+customElements.define('spa-app', SPAElement);
+</script>
+
+  </body>
 </html>

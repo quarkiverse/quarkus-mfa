@@ -69,7 +69,8 @@ public class MfaAuthConstants {
         ACCOUNT_LOCKED("account-locked"),
         FAILED("failed"),
         FAILED_CURRENT("failed-current"),
-        FAILED_POLICY("failed-policy");
+        FAILED_POLICY("failed-policy"),
+        SUCCESS("success");
 
         private static final Map<String, ViewStatus> ENUM_MAP;
         static {
