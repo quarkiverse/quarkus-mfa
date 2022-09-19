@@ -7,6 +7,8 @@
 
 ## Overview
 
+:warning: **OIDC is the preferred Quarkus authentication mechanism**: Centralized identity management is a universal IT organizational goal. Only consider using this alternative authentication mechanism to satisfy unique web application authentication requirements.
+
 A [Quarkus](https://quarkus.io/) extension that provides enhanced form based authentication. It provides strong native authentication to supplement the preferred [OIDC authentication mechanism](https://quarkus.io/guides/security-openid-connect-web-authentication). 
 
 Centralized identity management should be goal of all organizations and OIDC should be the primary form of authentication for Quarkus web applications. Consider utilizing this authentication extension under these two circumstances:
