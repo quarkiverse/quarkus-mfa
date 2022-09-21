@@ -25,6 +25,10 @@
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-security-deployment</artifactId>
     </dependency>
+     <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-jsonp-deployment</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.quarkiverse.mfa</groupId>
       <artifactId>quarkus-mfa</artifactId>
