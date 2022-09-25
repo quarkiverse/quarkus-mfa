@@ -53,7 +53,7 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
     private final String loginAction;
     private final JWELoginManager loginManager;
 
-    MfaAuthenticationMechanism(String loginView, String logoutView, String loginAction, JWELoginManager loginManager) {
+    public MfaAuthenticationMechanism(String loginView, String logoutView, String loginAction, JWELoginManager loginManager) {
         this.loginView = loginView;
         this.logoutView = logoutView;
         this.loginAction = loginAction;
