@@ -8,7 +8,7 @@
   </parent>
   <groupId>io.quarkiverse.mfa</groupId>
   <artifactId>quarkus-mfa-parent</artifactId>
-  <version>0.5.3</version>
+  <version>999-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Quarkus Multi-Factored Authentication (MFA) Extension - Parent</name>
   <modules>
@@ -78,8 +78,4 @@
       </plugins>
     </pluginManagement>
   </build>
-
-  <scm>
-    <tag>0.5.3</tag>
-  </scm>
 </project>
