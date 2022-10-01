@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.quarkiverse.mfa</groupId>
     <artifactId>quarkus-mfa-parent</artifactId>
-    <version>0.5.4</version>
+    <version>999-SNAPSHOT</version>
   </parent>
   <artifactId>quarkus-mfa-deployment</artifactId>
   <name>Quarkus Multi-Factored Authentication (MFA) Extension - Deployment</name>
