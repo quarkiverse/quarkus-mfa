@@ -69,7 +69,6 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
                 || (loginAction.equals(path) && context.request().params().contains("logout"));
         JwtClaims claims = loginManager.restore(context);
         if (loginManager.hasSubject(claims) && !logoutAttempt && !loginAttempt) {
-            JwtClaims authClaims = claims;
             // TODO explorer chaining this Uni together with the code below so that a re-authentication is attempted instead of a 403 if the SecurityIdentity is null.
             return restoreIdentity(claims, context, identityProviderManager);
         }
@@ -97,7 +96,10 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
                 claims.setClaim("action", ViewAction.LOGIN.toString());
                 claims.setClaim("path", "/");
             }
-        } else {
+        } else if (!claims.hasClaim("path")) {
+            if (!claims.hasClaim("action")) {
+                claims.setClaim("action", ViewAction.LOGIN);
+            }
             claims.setClaim("path", path);
         }
 
@@ -434,7 +436,7 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
 
     @Override
     public Uni<ChallengeData> getChallenge(RoutingContext context) {
-        throw new IllegalStateException("Unimplemented");
+        throw new UnsupportedOperationException("Unimplemented");
     }
 
     @Override
@@ -456,11 +458,6 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
             context.response().setStatusCode(302).putHeader(LOCATION, loc).end();
         }
         return Uni.createFrom().item(true);
-    }
-
-    static Uni<ChallengeData> getChallengeRedirect(final RoutingContext exchange, final String location) {
-        String loc = exchange.request().scheme() + "://" + exchange.request().host() + location;
-        return Uni.createFrom().item(new ChallengeData(302, LOCATION, loc));
     }
 
     static void sendRedirect(final RoutingContext exchange, final String location) {
