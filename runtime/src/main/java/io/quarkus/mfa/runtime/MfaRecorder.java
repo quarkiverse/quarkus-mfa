@@ -81,7 +81,11 @@ public class MfaRecorder {
                         : "/" + buildConfig.logoutView;
                 String loginAction = buildConfig.loginAction.startsWith("/") ? buildConfig.loginAction
                         : "/" + buildConfig.loginAction;
-                return new MfaAuthenticationMechanism(loginView, logoutView, loginAction, loginManager);
+                String landingPage = buildConfig.landingPage;
+                boolean redirectAfterLogin = buildConfig.redirectAfterLogin;
+
+                return new MfaAuthenticationMechanism(loginView, logoutView, loginAction, landingPage, redirectAfterLogin,
+                        loginManager);
             }
         };
     }

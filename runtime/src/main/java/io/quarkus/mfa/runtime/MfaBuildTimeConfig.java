@@ -30,4 +30,17 @@ public class MfaBuildTimeConfig {
     @ConfigItem(defaultValue = "/mfa_action")
     public String loginAction;
 
+    /**
+     * The landing page to redirect to if there is no saved page to redirect back to
+     */
+    @ConfigItem(defaultValue = "/")
+    public String landingPage;
+
+    /**
+     * Option to disable redirect to landingPage if there is no saved page to redirect back to. MFA POST is followed by redirect
+     * to landingPage by default.
+     */
+    @ConfigItem(defaultValue = "true")
+    public boolean redirectAfterLogin;
+
 }

@@ -47,4 +47,5 @@ public class MfaRunTimeConfig {
      */
     @ConfigItem(defaultValue = "quarkus-mfa-credential")
     public String cookieName;
+
 }

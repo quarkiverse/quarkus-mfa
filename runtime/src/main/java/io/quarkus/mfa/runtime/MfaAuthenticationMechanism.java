@@ -51,12 +51,17 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
     private final String loginView;
     private final String logoutView;
     private final String loginAction;
+    private final String landingPage;
+    private final boolean redirectAfterLogin;
     private final JWELoginManager loginManager;
 
-    public MfaAuthenticationMechanism(String loginView, String logoutView, String loginAction, JWELoginManager loginManager) {
+    public MfaAuthenticationMechanism(String loginView, String logoutView, String loginAction, String landingPage,
+            boolean redirectAfterLogin, JWELoginManager loginManager) {
         this.loginView = loginView;
         this.logoutView = logoutView;
         this.loginAction = loginAction;
+        this.landingPage = landingPage;
+        this.redirectAfterLogin = redirectAfterLogin;
         this.loginManager = loginManager;
     }
 
@@ -94,7 +99,7 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
         } else if (loginAction.equals(path)) {
             if (!claims.hasClaim("action")) { // zero form login
                 claims.setClaim("action", ViewAction.LOGIN.toString());
-                claims.setClaim("path", "/");
+                claims.setClaim("path", landingPage);
             }
         } else if (!claims.hasClaim("path")) {
             if (!claims.hasClaim("action")) {
@@ -198,7 +203,7 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
     private void successfulLogin(RoutingContext context, boolean isJson, JwtClaims authContext,
             Map<String, Object> attributes) {
         String path = authContext.getClaimValueAsString("path");
-        path = path != null ? path : "/";
+        path = path != null ? path : landingPage;
         JwtClaims authenticated = new JwtClaims();
         authenticated.setIssuedAt(NumericDate.now());
         attributes.entrySet().forEach(e -> authenticated.setClaim(e.getKey(), e.getValue()));
@@ -216,9 +221,13 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
             authContext.setClaim("sub", authenticated.getClaimValue("sub"));
             authContext.setClaim("exp", authenticated.getClaimValue("exp"));
             sendJson(context, authContext);
-        } else {
-            sendRedirect(context, path);
+        } else if (redirectAfterLogin) {
+            sendPostAuthRedirect(context, path);
         }
+    }
+
+    protected void sendPostAuthRedirect(final RoutingContext context, final String path) {
+        sendRedirect(context, path);
     }
 
     private void handleLogin(RoutingContext context, boolean isJson, JwtClaims authContext, MfaIdentityStore mfaIdentityStore) {
@@ -460,7 +469,7 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
         return Uni.createFrom().item(true);
     }
 
-    static void sendRedirect(final RoutingContext exchange, final String location) {
+    protected void sendRedirect(final RoutingContext exchange, final String location) {
         String loc = exchange.request().scheme() + "://" + exchange.request().host() + location;
         exchange.response().setStatusCode(302).putHeader(LOCATION, loc).end();
     }
