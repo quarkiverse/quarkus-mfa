@@ -1,5 +1,5 @@
 :quarkus-version: 2.13.3.Final
-:quarkus-mfa-version: 0.5.5
+:quarkus-mfa-version: 0.5.6
 
 :quarkus-org-url: https://github.com/quarkusio
 :quarkus-base-url: {quarkus-org-url}/quarkus
