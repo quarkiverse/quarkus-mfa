@@ -70,10 +70,11 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
         String path = context.request().path();
         log.debugf("authenticating %s", path);
         boolean loginAttempt = loginView.equals(path);
+        boolean authAttempt = loginAction.equals(path);
         boolean logoutAttempt = logoutView.equals(path)
-                || (loginAction.equals(path) && context.request().params().contains("logout"));
+                || (authAttempt && context.request().params().contains("logout"));
         JwtClaims claims = loginManager.restore(context);
-        if (loginManager.hasSubject(claims) && !logoutAttempt && !loginAttempt) {
+        if (loginManager.hasSubject(claims) && !logoutAttempt && !loginAttempt && !authAttempt) {
             // TODO explorer chaining this Uni together with the code below so that a re-authentication is attempted instead of a 403 if the SecurityIdentity is null.
             return restoreIdentity(claims, context, identityProviderManager);
         }
@@ -96,7 +97,7 @@ public class MfaAuthenticationMechanism implements HttpAuthenticationMechanism {
             context.put(AUTH_CONTEXT_KEY,
                     new MfaAuthContext(ViewAction.get(claims.getClaimValueAsString("action")), null, null));
             loginManager.clear(context);
-        } else if (loginAction.equals(path)) {
+        } else if (authAttempt) {
             if (!claims.hasClaim("action")) { // zero form login
                 claims.setClaim("action", ViewAction.LOGIN.toString());
                 claims.setClaim("path", landingPage);
