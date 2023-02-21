@@ -47,7 +47,7 @@ public class MfaRecorder {
     }
 
     public void setupRoutes(BeanContainer beanContainer, MfaBuildTimeConfig buildConfig, RuntimeValue<Router> routerValue) {
-        MfaAuthenticationMechanism authMech = beanContainer.instance(MfaAuthenticationMechanism.class);
+        MfaAuthenticationMechanism authMech = beanContainer.beanInstance(MfaAuthenticationMechanism.class);
         Router router = routerValue.getValue();
         BodyHandler bodyHandler = BodyHandler.create();
         String loginAction = buildConfig.loginAction.startsWith("/") ? buildConfig.loginAction : "/" + buildConfig.loginAction;
