@@ -1,6 +1,6 @@
 package io.quarkus.mfa.runtime;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import io.quarkus.arc.Unremovable;
 import io.quarkus.security.identity.AuthenticationRequestContext;
