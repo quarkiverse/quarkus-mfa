@@ -1,5 +1,5 @@
 name: quarkus-mfa
-title: Quarkus MFA
+title: MFA
 version: dev
 nav:
   - modules/ROOT/nav.adoc
