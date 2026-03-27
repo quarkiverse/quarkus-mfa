@@ -14,7 +14,7 @@ import org.jose4j.lang.ByteUtil;
 import io.quarkus.arc.runtime.BeanContainer;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
-import io.quarkus.vertx.http.runtime.HttpBuildTimeConfig;
+import io.quarkus.vertx.http.runtime.HttpConfiguration;
 import io.quarkus.vertx.http.runtime.PolicyMappingConfig;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -34,7 +34,7 @@ public class MfaRecorder {
     }
 
     // automatically add MFA endpoints to the authentication policy to allow anonymous access.
-    public void initPermissions(MfaBuildTimeConfig mfaBuildTimeConfig, HttpBuildTimeConfig httpBuildTimeConfig) {
+    public void initPermissions(MfaBuildTimeConfig mfaBuildTimeConfig, HttpConfiguration httpRunTimeConfig) {
         PolicyMappingConfig config = new PolicyMappingConfig();
         config.enabled = Optional.of(true);
         config.methods = Optional.of(List.of("GET", "POST"));
@@ -42,8 +42,7 @@ public class MfaRecorder {
                 .of(List.of(mfaBuildTimeConfig.loginView, mfaBuildTimeConfig.logoutView, mfaBuildTimeConfig.loginAction));
         config.policy = "permit";
         config.authMechanism = Optional.empty();
-        httpBuildTimeConfig.auth.permissions.put("quarkus_mfa", config);
-
+        httpRunTimeConfig.auth.permissions.put("quarkus_mfa", config);
     }
 
     public void setupRoutes(BeanContainer beanContainer, MfaBuildTimeConfig buildConfig, RuntimeValue<Router> routerValue) {

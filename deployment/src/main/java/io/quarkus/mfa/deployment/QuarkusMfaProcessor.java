@@ -18,7 +18,7 @@ import io.quarkus.mfa.runtime.MfaBuildTimeConfig;
 import io.quarkus.mfa.runtime.MfaIdentityProvider;
 import io.quarkus.mfa.runtime.MfaRecorder;
 import io.quarkus.vertx.http.deployment.VertxWebRouterBuildItem;
-import io.quarkus.vertx.http.runtime.HttpBuildTimeConfig;
+import io.quarkus.vertx.http.runtime.HttpConfiguration;
 import io.quarkus.vertx.http.runtime.security.HttpAuthenticationMechanism;
 
 @BuildSteps(onlyIf = QuarkusMfaProcessor.IsEnabled.class)
@@ -39,11 +39,10 @@ class QuarkusMfaProcessor {
     }
 
     @BuildStep
-    @Record(ExecutionTime.STATIC_INIT)
+    @Record(ExecutionTime.RUNTIME_INIT)
     public void initPermissions(MfaRecorder recorder, MfaBuildTimeConfig mfaBuildTimeConfig,
-            HttpBuildTimeConfig httpBuildTimeConfig) {
-        recorder.initPermissions(mfaBuildTimeConfig, httpBuildTimeConfig);
-
+            HttpConfiguration httpRunTimeConfig) {
+        recorder.initPermissions(mfaBuildTimeConfig, httpRunTimeConfig);
     }
 
     @Record(ExecutionTime.RUNTIME_INIT)
