@@ -2,6 +2,7 @@ package io.quarkus.mfa.deployment;
 
 import java.util.function.BooleanSupplier;
 
+import io.quarkus.vertx.http.runtime.VertxHttpBuildTimeConfig;
 import jakarta.inject.Singleton;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -41,7 +42,7 @@ class QuarkusMfaProcessor {
     @BuildStep
     @Record(ExecutionTime.STATIC_INIT)
     public void initPermissions(MfaRecorder recorder, MfaBuildTimeConfig mfaBuildTimeConfig,
-            HttpBuildTimeConfig httpBuildTimeConfig) {
+            VertxHttpBuildTimeConfig httpBuildTimeConfig) {
         recorder.initPermissions(mfaBuildTimeConfig, httpBuildTimeConfig);
 
     }
@@ -66,7 +67,7 @@ class QuarkusMfaProcessor {
         MfaBuildTimeConfig config;
 
         public boolean getAsBoolean() {
-            return config.enabled;
+            return config.enabled();
         }
     }
 }

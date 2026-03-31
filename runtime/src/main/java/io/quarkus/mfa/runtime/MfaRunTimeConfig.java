@@ -3,26 +3,27 @@ package io.quarkus.mfa.runtime;
 import java.time.Duration;
 import java.util.Optional;
 
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
 
-@ConfigRoot(name = "mfa", phase = ConfigPhase.RUN_TIME)
-public class MfaRunTimeConfig {
+@ConfigMapping(prefix = "quarkus.mfa")
+@ConfigRoot(phase = ConfigPhase.RUN_TIME)
+public interface MfaRunTimeConfig {
 
     /**
-     * The encrpytion key used to encrypte JWEs
+     * The encryption key used to encrypt JWEs
      */
-    @ConfigItem(name = "encryption-key")
-    public Optional<String> encryptionKey;
+    Optional<String> encryptionKey();
 
     /**
      * The inactivity (idle) timeout
      *
      * When inactivity timeout is reached, cookie is not renewed and a new login is enforced.
      */
-    @ConfigItem(defaultValue = "PT30M")
-    public Duration sessionTimeout;
+    @WithDefault("PT30M")
+    Duration sessionTimeout();
 
     /**
      * How old a cookie can get before it will be replaced with a new cookie with an updated timeout, also
@@ -39,13 +40,13 @@ public class MfaRunTimeConfig {
      * In other words, no timeout is tracked on the server side; the timestamp is encoded and encrypted in the cookie
      * itself, and it is decrypted and parsed with each request.
      */
-    @ConfigItem(defaultValue = "PT1M")
-    public Duration newCookieInterval;
+    @WithDefault("PT1M")
+    Duration newCookieInterval();
 
     /**
      * The cookie that is used to store the persistent session
      */
-    @ConfigItem(defaultValue = "quarkus-mfa-credential")
-    public String cookieName;
+    @WithDefault("quarkus-mfa-credential")
+    String cookieName();
 
 }
